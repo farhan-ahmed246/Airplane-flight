@@ -10,20 +10,9 @@ st.set_page_config(
 st.title("✈ Airplane Ticket Registration")
 st.markdown("---")
 
-st.header("Flight Details")
+st.header("👤 Passenger Registration")
 
-flight_date = st.date_input(
-    "Select Flight Date",
-    min_value=date.today()
-)
-
-flight_day = flight_date.strftime("%A")
-
-st.info(f"📆 Flight Day: **{flight_day}**")
-
-st.markdown("---")
-st.header("Ticket Registration")
-
+# Number of travelers
 num_travelers = st.number_input(
     "How many people are traveling?",
     min_value=1,
@@ -33,57 +22,79 @@ num_travelers = st.number_input(
 
 st.markdown("---")
 
-all_data = []
+all_passengers = []
 
 for i in range(1, int(num_travelers) + 1):
-    st.subheader(f"Traveler {i} Information")
+    st.subheader(f"Traveler {i}")
 
     name = st.text_input(
-        f"Traveler {i} Name",
+        f"Name",
         key=f"name_{i}"
     )
 
     father = st.text_input(
-        f"Traveler {i} Father Name",
+        f"Father Name",
         key=f"father_{i}"
     )
 
     fullname = st.text_input(
-        f"Traveler {i} Full Name",
+        f"Full Name",
         key=f"fullname_{i}"
     )
 
     age_input = st.text_input(
-        f"Traveler {i} Age",
+        f"Age",
         key=f"age_{i}"
     )
 
-    valid = False
+    valid_age = False
+    age = None
 
     if age_input:
         if age_input.isdigit():
             age = int(age_input)
             if age < 5:
-                st.warning("⚠️ 5+ Years kids can enter the plane")
+                st.warning("⚠️ 5+ years required to enter the plane")
             else:
-                valid = True
-                st.success(f"Age entered: {age}", icon="✅")
+                valid_age = True
+                st.success("✅ Age accepted")
         else:
             st.error("❌ Please enter a NUMBER")
 
-    if name and father and fullname and valid:
-        st.success("✅ You are selected")
-        all_data.append({
+    if name and father and fullname and valid_age:
+        st.success("✅ Traveler Selected")
+        all_passengers.append({
             "Name": name,
             "Father Name": father,
             "Full Name": fullname,
-            "Age": age,
-            "Flight Date": flight_date,
-            "Flight Day": flight_day
+            "Age": age
         })
 
     st.markdown("---")
 
-if all_data:
-    st.header("🎫 Registration Summary")
-    st.table(all_data)
+# =========================
+# FLIGHT DETAILS (AT BOTTOM)
+# =========================
+
+if all_passengers:
+    st.header("✈ Flight Details")
+
+    flight_date = st.date_input(
+        "Select Flight Date",
+        value=None
+    )
+
+    if flight_date:
+        flight_day = flight_date.strftime("%A")
+        st.info(f"📅 Flight Day: **{flight_day}**")
+
+        st.markdown("---")
+        st.header("🎫 Final Ticket Summary")
+
+        for p in all_passengers:
+            p["Flight Date"] = flight_date
+            p["Flight Day"] = flight_day
+
+        st.table(all_passengers)
+    else:
+        st.warning("⚠️ Please select flight date to continue")
